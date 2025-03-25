@@ -3,3 +3,4 @@ fastjsonschema
 python-dotenv
 uvicorn
 neo4j
+dotenv
