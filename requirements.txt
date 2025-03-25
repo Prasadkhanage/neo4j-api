@@ -3,3 +3,4 @@ fastjsonschema
 uvicorn
 neo4j
 flask
+gunicorn
