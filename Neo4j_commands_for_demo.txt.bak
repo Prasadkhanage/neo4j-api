@@ -1,0 +1,25 @@
+
+command to get relationships
+{
+    "query": "MATCH (p:Person)-[r:FRIENDS_WITH]->(q:Person) RETURN p.name, type(r), q.name LIMIT 10"
+}
+
+SELECT
+{
+    "query": "MATCH (p:Person) WHERE p.age > 25 RETURN p"
+}
+
+INSERT
+{	
+	"query": "CREATE (p:Person {name: 'John Doe', age: 30, city: 'New York'}) RETURN p"
+}
+
+UPDATE
+{
+    "query": "MATCH (p:Person {name: 'John Doe'}) SET p.age = 35 RETURN p"
+}
+
+DELETE
+{
+    "query": "MATCH (p:Person {name: 'John Doe'}) DETACH DELETE p"
+}
