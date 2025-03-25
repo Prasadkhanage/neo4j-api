@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from neo4j import GraphDatabase
 import uvicorn
-from dotenv import load_dotenv
 
 load_dotenv()
 
