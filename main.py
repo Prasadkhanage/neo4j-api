@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from neo4j import GraphDatabase
 import uvicorn
-import dotenv
 
 # Neo4j Connection Details
 NEO4J_URI = "neo4j://4.188.246.244:7687"
