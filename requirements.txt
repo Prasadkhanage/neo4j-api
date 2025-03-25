@@ -2,4 +2,3 @@ fastapi
 fastjsonschema
 uvicorn
 neo4j
-dotenv
