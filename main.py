@@ -4,7 +4,7 @@ from neo4j import GraphDatabase
 from pydantic import BaseModel
 
 # Neo4j Connection Details
-NEO4J_URI = "neo4j://4.188.246.244:7687"
+NEO4J_URI = "neo4j://4.240.43.130:7687"
 NEO4J_USER = "neo4j"
 NEO4J_PASSWORD = "Cd2cNU9UPVOakik"
 
