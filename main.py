@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from neo4j import GraphDatabase
 
 # Neo4j Connection Details
-NEO4J_URI = "neo4j://<your-neo4j-ip>:7687"
+NEO4J_URI = "neo4j://4.188.246.244:7687"
 NEO4J_USER = "neo4j"
 NEO4J_PASSWORD = "Cd2cNU9UPVOakik"
 
