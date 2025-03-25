@@ -1,5 +1,9 @@
 from flask import Flask, request, jsonify
 from neo4j import GraphDatabase
+import uvicorn
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Neo4j Connection Details
 NEO4J_URI = "neo4j://4.188.246.244:7687"
@@ -45,5 +49,13 @@ def execute_cypher():
     return jsonify(result)
 
 # Start Flask API Server
+# if __name__ == "__main__":
+#     app.run(host="0.0.0.0", port=5000, debug=True)
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    uvicorn.run(
+        "main:app", 
+        host="0.0.0.0", 
+        port=5000,
+        reload=True
+    )
