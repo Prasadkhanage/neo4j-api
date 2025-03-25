@@ -68,7 +68,8 @@ fastjsonschema==2.20.0
 # pydantic_core==2.27.2
 # Pygments==2.18.0
 # python-dateutil==2.9.0.post0
-# python-dotenv==1.0.1
+python-dotenv==1.0.1
+dotenv
 # pywin32==308
 # PyYAML==6.0.2
 # pyzmq==26.2.0
