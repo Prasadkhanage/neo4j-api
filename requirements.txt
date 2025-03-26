@@ -3,3 +3,7 @@ fastjsonschema
 uvicorn
 neo4j
 gunicorn
+python-dotenv
+passlib
+bcrypt
+pyjwt

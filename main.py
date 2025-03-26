@@ -1,56 +1,46 @@
 import uvicorn
-from fastapi import FastAPI, Request, HTTPException
-from neo4j import GraphDatabase
-from pydantic import BaseModel
-
-# Neo4j Connection Details
-NEO4J_URI = "neo4j://4.240.43.130:7687"
-NEO4J_USER = "neo4j"
-NEO4J_PASSWORD = "Cd2cNU9UPVOakik"
-
-# Connect to Neo4j
-driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+from fastapi import FastAPI, Depends, HTTPException, status
+from database import db
+from auth import get_current_user, create_access_token, verify_password, hash_password
+from models import UserCreate, UserLogin, QueryRequest
 
 app = FastAPI()
 
-# Request Model
-class QueryRequest(BaseModel):
-    query: str
-    params: dict = {}
+# Register User
+@app.post("/register")
+def register_user(user: UserCreate):
+    hashed_password = hash_password(user.password)
+    query = """
+    CREATE (u:User {username: $username, password: $password, role: $role})
+    RETURN u.username, u.role
+    """
+    result = db.execute_query(query, {"username": user.username, "password": hashed_password, "role": user.role})
 
-# Function to Execute Queries
-def execute_query(query: str, params: dict = None):
-    try:
-        with driver.session() as session:
-            result = session.run(query, params or {})
-            return [record.data() for record in result]
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    if not result:
+        raise HTTPException(status_code=400, detail="User registration failed")
 
-# API Endpoint to Execute Cypher Queries
+    return {"message": "User registered successfully"}
+
+# Login & Get JWT Token
+@app.post("/login")
+def login(user: UserLogin):
+    query = "MATCH (u:User {username: $username}) RETURN u.password AS password, u.role AS role"
+    result = db.execute_query(query, {"username": user.username})
+
+    if not result or not verify_password(user.password, result[0]["password"]):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
+    access_token = create_access_token(data={"sub": user.username, "role": result[0]["role"]})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+# Execute Cypher Query (Admin Only)
 @app.post("/execute")
-async def execute_cypher(request: QueryRequest):
-    """
-    Accepts JSON input:
-    {
-        "query": "MATCH (n) RETURN n LIMIT 10",
-        "params": {}  # Optional parameters
-    }
-    """
-    if not request.query:
-        raise HTTPException(status_code=400, detail="Query is required")
+def execute_cypher(request: QueryRequest, user: dict = Depends(get_current_user)):
+    if user["role"] != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
-    # ❌ Prevent DELETE Queries
-    # if "DELETE" in request.query.upper():
-    #     raise HTTPException(status_code=403, detail="DELETE queries are not allowed")
+    return db.execute_query(request.query, request.params)
 
-    return execute_query(request.query, request.params)
-
-# Start FastAPI Server
+# Run Server
 if __name__ == "__main__":
-    uvicorn.run(
-        app, 
-        host="0.0.0.0", 
-        port=5000,
-        reload=True
-    )
+    uvicorn.run(app, host="0.0.0.0", port=5000, reload=True)
